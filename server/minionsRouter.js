@@ -66,3 +66,35 @@ minionsRouter.delete('/:minionId', (req, res) => {
 });
 
 
+//GET /api/minions/:minionId/work to get an array of all work for the specified minion.
+minionsRouter.get('/:minionId/work', (req, res) => {    
+    const id =req.params.minionId;
+    const works = getAllFromDatabase('work').filter((work)=> work.minionId == id) 
+    res.send(works);
+});
+
+//POST /api/minions/:minionId/work to create a new work object and save it to the database.
+minionsRouter.post('/:minionId/work', (req, res) => {    
+    const id =req.params.minionId;
+    req.body.minionId = id;    
+    const work = addToDatabase('work', req.body)    
+    res.send(work);
+});
+
+//PUT /api/minions/:minionId/work/:workId to update a single work by id.
+minionsRouter.put('/:minionId/work/:workId', (req, res) => {    
+    const minionId =req.params.minionId;
+    const workId = req.params.workId;
+    req.body.minionId = minionId;
+    req.body.id = workId;
+    const minionWorks = getAllFromDatabase('work').filter((work)=> work.minionId == minionId)    
+    let workToUpdate = minionWorks.filter((work)=> work.id == workId)       
+    workToUpdate = req.body;     
+    updateInstanceInDatabase('work', workToUpdate)
+    res.send(workToUpdate);
+});
+
+// DELETE /api/minions/:minionId/work/:workId to delete a single work by id.
+minionsRouter.delete('/:minionId/work/:workId', (req, res) => {   
+    res.send(deleteFromDatabasebyId('work',req.params.workId));
+});
